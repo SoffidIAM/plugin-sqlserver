@@ -17,6 +17,11 @@
       <artifactId>ojdbc14</artifactId>
       <version>10.2.0.4.0</version>
     </dependency>
+    <dependency>
+        <groupId>com.soffid.iam.console</groupId>
+        <artifactId>iam-common</artifactId>
+        <version>1.5.0</version>
+    </dependency>
   </dependencies>
   <licenses>
     <license>
