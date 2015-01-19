@@ -10,7 +10,7 @@
   <artifactId>oracle-plugin</artifactId>
   <packaging>jar</packaging>
   <name>Oracle plugin</name>
-  <version>1.2.0</version>
+  <version>1.3.0-SNAPSHOT</version>
   <dependencies>
     <dependency>
       <groupId>com.oracle</groupId>
