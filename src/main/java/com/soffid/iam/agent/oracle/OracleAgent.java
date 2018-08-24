@@ -24,7 +24,6 @@ import es.caib.seycon.ng.comu.DispatcherAccessControl;
 import es.caib.seycon.ng.exception.InternalErrorException;
 import es.caib.seycon.ng.comu.Password;
 import es.caib.seycon.util.TimedProcess;
-import es.caib.seycon.UnknownUserException;
 import es.caib.seycon.ng.comu.Account;
 import es.caib.seycon.ng.comu.ControlAcces;
 import es.caib.seycon.ng.comu.Grup;
@@ -38,11 +37,8 @@ import es.caib.seycon.ng.sync.intf.AccessLogMgr;
 import es.caib.seycon.ng.sync.intf.LogEntry;
 import es.caib.seycon.ng.sync.intf.ReconcileMgr;
 import es.caib.seycon.ng.sync.intf.ReconcileMgr2;
-import es.caib.seycon.ng.sync.intf.RoleInfo;
 import es.caib.seycon.ng.sync.intf.RoleMgr;
-import es.caib.seycon.ng.sync.intf.UserInfo;
 import es.caib.seycon.ng.sync.intf.UserMgr;
-import es.caib.seycon.db.LogInfoConnection;
 
 /**
  * Agente SEYCON para gestionar bases de datos Oracle
@@ -121,17 +117,17 @@ public class OracleAgent extends Agent implements UserMgr, RoleMgr,
 						+ //$NON-NLS-1$
 						"   sac_program		varchar2(80 CHAR)"
 						+ //$NON-NLS-1$
-						" ) "
-						+ //$NON-NLS-1$
-						" partition by range (sac_logon_day) "
-						+ //$NON-NLS-1$
-						" ( "
-						+ //$NON-NLS-1$
-						"   partition SC_OR_ACCLOG_p"
-						+ anyo
-						+ " values less than (to_date('01/01/" + (anyo + 1) + "','DD/MM/YYYY')), " + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-						"   partition SC_OR_ACCLOG_otros values less than (maxvalue) "
-						+ //$NON-NLS-1$
+//						" ) "
+//						+ //$NON-NLS-1$
+//						" partition by range (sac_logon_day) "
+//						+ //$NON-NLS-1$
+//						" ( "
+//						+ //$NON-NLS-1$
+//						"   partition SC_OR_ACCLOG_p"
+//						+ anyo
+//						+ " values less than (to_date('01/01/" + (anyo + 1) + "','DD/MM/YYYY')), " + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+//						"   partition SC_OR_ACCLOG_otros values less than (maxvalue) "
+//						+ //$NON-NLS-1$
 						" )"; //$NON-NLS-1$
 				stmt = sqlConnection.prepareStatement(cmd);
 				stmt.execute();
@@ -642,8 +638,7 @@ public class OracleAgent extends Agent implements UserMgr, RoleMgr,
 					conn = DriverManager.getConnection(db, user,
 							password.getPassword());
 				}
-				hash.put(this.getDispatcher().getCodi(), new LogInfoConnection(
-						conn));
+				hash.put(this.getDispatcher().getCodi(), conn);
 			} catch (SQLException e) {
 				e.printStackTrace();
 				throw new InternalErrorException(
@@ -1306,8 +1301,7 @@ public class OracleAgent extends Agent implements UserMgr, RoleMgr,
 				// Lo activamos al final (!!)
 
 				// Obtenemos las reglas de control de acceso
-				LinkedList<ControlAcces> controlAcces = dispatcherInfo
-						.getControlAcces();
+				List<ControlAcces> controlAcces = dispatcherInfo.getControlAcces();
 				// ArrayList<ControlAccess> controlAccess =
 				// dispatcherInfo.getControlAcces();
 
@@ -1434,6 +1428,7 @@ public class OracleAgent extends Agent implements UserMgr, RoleMgr,
 			if (From != null)
 				consulta += "WHERE SAC_LOGON_DAY>=? "; //$NON-NLS-1$
 			consulta += " order by SAC_LOGON_DAY "; //$NON-NLS-1$
+			log.info("consulta: "+consulta);
 			stmt = sqlConnection.prepareStatement(consulta);
 
 			if (From != null)
