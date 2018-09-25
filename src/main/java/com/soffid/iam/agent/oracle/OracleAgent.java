@@ -34,7 +34,6 @@ import es.caib.seycon.ng.sync.intf.LogEntry;
 import es.caib.seycon.ng.sync.intf.ReconcileMgr2;
 import es.caib.seycon.ng.sync.intf.RoleMgr;
 import es.caib.seycon.ng.sync.intf.UserMgr;
-import es.caib.seycon.util.TimedProcess;
 
 /**
  * Agente SEYCON para gestionar bases de datos Oracle
@@ -113,17 +112,17 @@ public class OracleAgent extends Agent implements UserMgr, RoleMgr,
 						+ //$NON-NLS-1$
 						"   sac_program		varchar2(80 CHAR)"
 						+ //$NON-NLS-1$
-						" ) "
-						+ //$NON-NLS-1$
-						" partition by range (sac_logon_day) "
-						+ //$NON-NLS-1$
-						" ( "
-						+ //$NON-NLS-1$
-						"   partition SC_OR_ACCLOG_p"
-						+ anyo
-						+ " values less than (to_date('01/01/" + (anyo + 1) + "','DD/MM/YYYY')), " + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-						"   partition SC_OR_ACCLOG_otros values less than (maxvalue) "
-						+ //$NON-NLS-1$
+//						" ) "
+//						+ //$NON-NLS-1$
+//						" partition by range (sac_logon_day) "
+//						+ //$NON-NLS-1$
+//						" ( "
+//						+ //$NON-NLS-1$
+//						"   partition SC_OR_ACCLOG_p"
+//						+ anyo
+//						+ " values less than (to_date('01/01/" + (anyo + 1) + "','DD/MM/YYYY')), " + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+//						"   partition SC_OR_ACCLOG_otros values less than (maxvalue) "
+//						+ //$NON-NLS-1$
 						" )"; //$NON-NLS-1$
 				stmt = sqlConnection.prepareStatement(cmd);
 				stmt.execute();
@@ -690,7 +689,6 @@ public class OracleAgent extends Agent implements UserMgr, RoleMgr,
 			throws java.rmi.RemoteException,
 			es.caib.seycon.ng.exception.InternalErrorException {
 		// boolean active;
-		TimedProcess p;
 		String user = usu.getCodi();
 		PreparedStatement stmt = null;
 		PreparedStatement stmt2 = null;
@@ -969,7 +967,6 @@ public class OracleAgent extends Agent implements UserMgr, RoleMgr,
 	public void updateUserPassword(String user, Usuari arg1, Password password,
 			boolean mustchange)
 			throws es.caib.seycon.ng.exception.InternalErrorException {
-		TimedProcess p;
 		PreparedStatement stmt = null;
 		String cmd = ""; //$NON-NLS-1$
 		try {
@@ -1424,6 +1421,7 @@ public class OracleAgent extends Agent implements UserMgr, RoleMgr,
 			if (From != null)
 				consulta += "WHERE SAC_LOGON_DAY>=? "; //$NON-NLS-1$
 			consulta += " order by SAC_LOGON_DAY "; //$NON-NLS-1$
+			log.info("consulta: "+consulta);
 			stmt = sqlConnection.prepareStatement(consulta);
 
 			if (From != null)
@@ -1566,8 +1564,6 @@ public class OracleAgent extends Agent implements UserMgr, RoleMgr,
 	public void updateUser(String nom, String descripcio)
 			throws RemoteException,
 			es.caib.seycon.ng.exception.InternalErrorException {
-
-		TimedProcess p;
 		PreparedStatement stmt = null;
 		PreparedStatement stmt2 = null;
 		ResultSet rset = null;
@@ -1774,9 +1770,7 @@ public class OracleAgent extends Agent implements UserMgr, RoleMgr,
 
 	public List<String> getAccountsList() throws RemoteException,
 			InternalErrorException {
-		// TODO Auto-generated method stub
 		LinkedList<String> accounts = new LinkedList<String>();
-		TimedProcess p;
 		PreparedStatement stmt = null;
 		PreparedStatement stmt2 = null;
 		ResultSet rset = null;

@@ -18,10 +18,15 @@
       <version>10.2.0.4.0</version>
     </dependency>
     <dependency>
-        <groupId>com.soffid.iam.console</groupId>
-        <artifactId>iam-common</artifactId>
-        <version>2.3.0</version>
-    </dependency>
+ 	 <groupId>com.soffid.iam.console</groupId>
+	  <artifactId>iam-common</artifactId>
+	  <version>2.3.2</version>
+	</dependency>
+    <dependency>
+ 	 <groupId>com.soffid.iam.sync</groupId>
+	  <artifactId>syncserver</artifactId>
+	  <version>2.3.2</version>
+	</dependency>
   </dependencies>
   <licenses>
     <license>
@@ -33,15 +38,6 @@
           <connection>scm:git:ssh://git@github.com:/SoffidIAM/plugin-oracle.git</connection>
           <tag>HEAD</tag>
   </scm>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>1.2</version>
-      </plugin>
-    </plugins>
-  </build>
   <properties>
     <maven.compile.source>5</maven.compile.source>
     <maven.compile.target>5</maven.compile.target>
