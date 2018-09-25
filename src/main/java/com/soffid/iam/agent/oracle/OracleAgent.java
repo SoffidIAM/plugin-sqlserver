@@ -7,7 +7,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
@@ -18,31 +17,24 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
-import es.caib.seycon.ng.comu.Dispatcher;
-import es.caib.seycon.ng.comu.DispatcherAccessControl;
-//import es.caib.seycon.InternalErrorException;
-import es.caib.seycon.ng.exception.InternalErrorException;
-import es.caib.seycon.ng.comu.Password;
-import es.caib.seycon.util.TimedProcess;
-import es.caib.seycon.UnknownUserException;
 import es.caib.seycon.ng.comu.Account;
 import es.caib.seycon.ng.comu.ControlAcces;
+import es.caib.seycon.ng.comu.DispatcherAccessControl;
 import es.caib.seycon.ng.comu.Grup;
+import es.caib.seycon.ng.comu.Password;
 import es.caib.seycon.ng.comu.Rol;
 import es.caib.seycon.ng.comu.RolGrant;
 import es.caib.seycon.ng.comu.Usuari;
-import es.caib.seycon.ng.exception.UnknownRoleException;
+//import es.caib.seycon.InternalErrorException;
+import es.caib.seycon.ng.exception.InternalErrorException;
 import es.caib.seycon.ng.sync.agent.Agent;
 import es.caib.seycon.ng.sync.intf.AccessControlMgr;
 import es.caib.seycon.ng.sync.intf.AccessLogMgr;
 import es.caib.seycon.ng.sync.intf.LogEntry;
-import es.caib.seycon.ng.sync.intf.ReconcileMgr;
 import es.caib.seycon.ng.sync.intf.ReconcileMgr2;
-import es.caib.seycon.ng.sync.intf.RoleInfo;
 import es.caib.seycon.ng.sync.intf.RoleMgr;
-import es.caib.seycon.ng.sync.intf.UserInfo;
 import es.caib.seycon.ng.sync.intf.UserMgr;
-import es.caib.seycon.db.LogInfoConnection;
+import es.caib.seycon.util.TimedProcess;
 
 /**
  * Agente SEYCON para gestionar bases de datos Oracle
@@ -642,8 +634,7 @@ public class OracleAgent extends Agent implements UserMgr, RoleMgr,
 					conn = DriverManager.getConnection(db, user,
 							password.getPassword());
 				}
-				hash.put(this.getDispatcher().getCodi(), new LogInfoConnection(
-						conn));
+				hash.put(this.getDispatcher().getCodi(), conn);
 			} catch (SQLException e) {
 				e.printStackTrace();
 				throw new InternalErrorException(
@@ -1306,8 +1297,7 @@ public class OracleAgent extends Agent implements UserMgr, RoleMgr,
 				// Lo activamos al final (!!)
 
 				// Obtenemos las reglas de control de acceso
-				LinkedList<ControlAcces> controlAcces = dispatcherInfo
-						.getControlAcces();
+				List<ControlAcces> controlAcces = dispatcherInfo.getControlAcces();
 				// ArrayList<ControlAccess> controlAccess =
 				// dispatcherInfo.getControlAcces();
 
