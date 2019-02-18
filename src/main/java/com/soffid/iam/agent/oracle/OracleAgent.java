@@ -669,6 +669,7 @@ public class OracleAgent extends Agent implements UserMgr, RoleMgr,
 			return;
 		}
 		e.printStackTrace(System.out);
+		throw new InternalErrorException("Error ejecutando sentencia SQL", e);
 	}
 
 	/**
