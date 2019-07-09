@@ -29,11 +29,11 @@
 			</hbox>
 		</row>
 		<row>
-			<input_etiqueta value="Password to protect roles" />
-			<hbox width="90%">
-				<input_password bind="@param3" lectura="${!canModifyAgent}"
-					width_custom="98%" />
-			</hbox>
+			<input_etiqueta value="Create agents for each database" />
+			<listbox bind="@param3" mold="select">
+				<listitem value="true" label="Yes"></listitem>
+				<listitem value="false" label="No"></listitem>
+			</listbox>
 		</row>
 	</rows>
 </grid>

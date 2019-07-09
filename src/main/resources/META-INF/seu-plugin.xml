@@ -3,48 +3,12 @@
 <seuServerPlugin xmlns="http://seu.sourceforge.net/schema/serverplugin"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://seu.sourceforge.net/schema/ServerPlugin.xsd">
-	<name>Oracle plugin</name>
+	<name>SQL Server plugin</name>
 	<version>${pom.version}</version>
-	<!-- <agent>
-		<name>OracleDes8i</name>
-		<javaClass>es.caib.seycon.agent.OracleDes8iAgent</javaClass>
-		<userInterface>OracleDes8iAgent.zul</userInterface>
+	<agent>
+		<name>SQLServer Agent</name>
+		<javaClass>com.soffid.iam.agent.sqlserver.SqlServerAgent</javaClass>
+		<userInterface>SqlServerAgent.zul</userInterface>
 		<enableAccessControl>true</enableAccessControl>
 	</agent>
-	<agent>
-		<name>OracleProd1Agent</name>
-		<javaClass>es.caib.seycon.agent.OracleProd1Agent</javaClass>
-		<userInterface>OracleProd1Agent.zul</userInterface>
-		<enableAccessControl>true</enableAccessControl>
-	</agent>
-	<agent>
-		<name>AgriAgent</name>
-		<javaClass>es.caib.seycon.agent.AgriAgent</javaClass>
-		<userInterface>AgriAgent.zul</userInterface>
-		<enableAccessControl>true</enableAccessControl>
-	</agent>
-	<agent>
-		<name>BoibAgent</name>
-		<javaClass>es.caib.seycon.agent.BoibAgent</javaClass>
-		<userInterface>BoibAgent.zul</userInterface>
-		<enableAccessControl>true</enableAccessControl>
-	</agent>-->
-	<agent>
-		<name>OracleAgent</name>
-		<javaClass>com.soffid.iam.agent.oracle.OracleAgent</javaClass>
-		<userInterface>OracleAgent.zul</userInterface>
-		<enableAccessControl>true</enableAccessControl>
-	</agent>
-	<!-- <agent>
-		<name>OracleDesarrAgent</name>
-		<javaClass>es.caib.seycon.agent.OracleDesarrAgent</javaClass>
-		<userInterface>OracleDesarrAgent.zul</userInterface>
-		<enableAccessControl>true</enableAccessControl>
-	</agent>
-	<agent>
-		<name>PresidAgent</name>
-		<javaClass>es.caib.seycon.agent.PresidAgent</javaClass>
-		<userInterface>PresidAgent.zul</userInterface>
-		<enableAccessControl>true</enableAccessControl>
-	</agent>-->
 </seuServerPlugin>

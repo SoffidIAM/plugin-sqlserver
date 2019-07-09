@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.soffid.iam.agent.oracle;
+package com.soffid.iam.agent.sqlserver;
 
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
