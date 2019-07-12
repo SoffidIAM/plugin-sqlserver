@@ -42,7 +42,8 @@ public class SqlServerAgent extends Agent implements UserMgr, RoleMgr,
 	transient Password password;
 	/** Cadena de conexión a la base de datos */
 	transient String db;
-	
+	/** Valor que activa o desactiva el debug */
+	transient boolean debug;
 	/**
 	 * Hash de conexiones ya establecidas. De esta forma se evita que el agente
 	 * seycon abra conexiones sin control debido a problemas de comunicaciones
@@ -71,10 +72,20 @@ public class SqlServerAgent extends Agent implements UserMgr, RoleMgr,
 	 */
 	public void init() throws InternalErrorException {
 		log.info("Starting Oracle agent {}", getSystem().getName(), null); //$NON-NLS-1$
+
 		user = getSystem().getParam0();
 		password = Password.decode(getSystem().getParam1());
 		db = getSystem().getParam2();
-		
+		boolean createChild = "true".equals(getSystem().getParam3());
+		debug = "true".equals(getSystem().getParam4());
+		if (debug) {
+			log.info("user: "+user);
+			log.info("password: ********");
+			log.info("db: "+db);
+			log.info("createChild: "+createChild);
+			log.info("debug: "+debug);
+		}
+
 		String instance = null;
 		int i = db.toLowerCase().indexOf(";databasename=");
 		if (i >= 0)
@@ -91,15 +102,13 @@ public class SqlServerAgent extends Agent implements UserMgr, RoleMgr,
 			db = db + ";databaseName=master";
 		}
 
-		log.info("Database instance = "+instance);
-		boolean createChild = "true".equals(getSystem().getParam3());
+		if (debug) log.info("Database instance = "+instance);
 		// Verifiramos que estén creadas las tablas y los triggers
 		if (createChild && instance.equalsIgnoreCase("master"))
 		{
-			log.info("Creating child dispatchers");
+			if (debug) log.info("Creating child dispatchers");
 			createChildDispatchers();
 		}
-
 	}
 
 	private void createChildDispatchers() throws InternalErrorException {
@@ -222,7 +231,7 @@ public class SqlServerAgent extends Agent implements UserMgr, RoleMgr,
 	 */
 	public void handleSQLException(SQLException e)
 			throws InternalErrorException {
-		log.warn(this.getSystem().getName() + " SQL Exception: ", e); //$NON-NLS-1$
+		if (debug) log.warn(this.getSystem().getName() + " SQL Exception: ", e); //$NON-NLS-1$
 		releaseConnection();
 		throw new InternalErrorException("Error executing statement", e);
 	}
@@ -278,6 +287,7 @@ public class SqlServerAgent extends Agent implements UserMgr, RoleMgr,
 					{
 						cmd = "CREATE LOGIN [" + account.getName() + "] FROM WINDOWS"; //$NON-NLS-1$
 					}
+					if (debug) log.info(cmd);
 					stmt = sqlConnection.prepareStatement(cmd);
 					stmt.execute();
 				}
@@ -299,6 +309,7 @@ public class SqlServerAgent extends Agent implements UserMgr, RoleMgr,
 					
 					String cmd;
 					cmd = "CREATE USER [" + account.getName() + "]"; //$NON-NLS-1$
+					if (debug) log.info(cmd);
 					stmt = sqlConnection.prepareStatement(cmd);
 					stmt.execute();
 				}
@@ -307,16 +318,19 @@ public class SqlServerAgent extends Agent implements UserMgr, RoleMgr,
 			{
 				if ( account.getStatus() == AccountStatus.REMOVED)
 				{
+					if (debug) log.info("DROP USER ["+account.getName()+"]");
 					stmt2 = sqlConnection.createStatement();
 					stmt2.execute("DROP USER ["+account.getName()+"]");
 					stmt2.close();
 				}
 				else if ( account.isDisabled())
 				{
+					if (debug) log.info("REVOKE CONNECT FROM ["+account.getName()+"]");
 					stmt2 = sqlConnection.createStatement();
 					stmt2.execute("REVOKE CONNECT FROM ["+account.getName()+"]");
 					stmt2.close();
-				} else { 
+				} else {
+					if (debug) log.info("GRANT CONNECT TO ["+account.getName()+"]");
 					stmt2 = sqlConnection.createStatement();
 					stmt2.execute("GRANT CONNECT TO ["+account.getName()+"]");
 					stmt2.close();
