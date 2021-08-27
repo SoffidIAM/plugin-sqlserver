@@ -41,7 +41,7 @@
     </license>
   </licenses>
   <scm>
-          <connection>scm:git:ssh://git@github.com:/SoffidIAM/plugin-oracle.git</connection>
+          <connection>scm:git:ssh://git@github.com:/SoffidIAM/plugin-sqlserver.git</connection>
           <tag>HEAD</tag>
   </scm>
   <properties>
