@@ -15,7 +15,7 @@
 			</hbox>
 		</row>
 		<row>
-			<input_etiqueta value="Oracle password" />
+			<input_etiqueta value="Password" />
 			<hbox width="90%">
 				<input_password bind="@param1" lectura="${!canModifyAgent}"
 					width_custom="98%" />
@@ -31,8 +31,15 @@
 		<row>
 			<input_etiqueta value="Create agents for each database" />
 			<listbox bind="@param3" mold="select">
-				<listitem value="true" label="Yes"></listitem>
 				<listitem value="false" label="No"></listitem>
+				<listitem value="true" label="Yes"></listitem>
+			</listbox>
+		</row>
+		<row>
+			<input_etiqueta value="Debug" />
+			<listbox bind="@param4" mold="select">
+				<listitem value="false" label="No"></listitem>
+				<listitem value="true" label="Yes"></listitem>
 			</listbox>
 		</row>
 		<row>

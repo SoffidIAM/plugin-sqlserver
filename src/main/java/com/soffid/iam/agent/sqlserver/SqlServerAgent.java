@@ -30,15 +30,15 @@ import com.soffid.iam.sync.intf.UserMgr;
 import es.caib.seycon.ng.exception.InternalErrorException;
 
 /**
- * Agente SEYCON para gestionar bases de datos Oracle
+ * Agente SEYCON para gestionar bases de datos SQL Server
  * <P>
  */
 
 public class SqlServerAgent extends Agent implements UserMgr, RoleMgr,
 		ReconcileMgr2 {
-	/** Usuario Oracle */
+	/** Usuario SQL Server */
 	transient String user;
-	/** Contraseña oracle */
+	/** Contraseña SQL Server */
 	transient Password password;
 	/** Cadena de conexión a la base de datos */
 	transient String db;
@@ -59,7 +59,7 @@ public class SqlServerAgent extends Agent implements UserMgr, RoleMgr,
 	 * 
 	 * @param params
 	 *            vector con parámetros de configuración: <LI>0 = usuario</LI>
-	 *            <LI>1 = contraseña oracle</LI> <LI>2 = cadena de conexión a la
+	 *            <LI>1 = contraseña</LI> <LI>2 = cadena de conexión a la
 	 *            base de datos</LI> <LI>3 = contraseña con la que se protegerán
 	 *            los roles</LI>
 	 */
@@ -71,11 +71,12 @@ public class SqlServerAgent extends Agent implements UserMgr, RoleMgr,
 	 * Inicializar el agente.
 	 */
 	public void init() throws InternalErrorException {
-		log.info("Starting Oracle agent {}", getSystem().getName(), null); //$NON-NLS-1$
-
+		log.info("Starting SQL Server agent {}", getSystem().getName(), null); //$NON-NLS-1$
 		user = getSystem().getParam0();
 		password = Password.decode(getSystem().getParam1());
 		db = getSystem().getParam2();
+		debug = "true".equals(getSystem().getParam4());
+		
 		boolean createChild = "true".equals(getSystem().getParam3());
 		debug = "true".equals(getSystem().getParam4());
 		if (debug) {
@@ -259,14 +260,18 @@ public class SqlServerAgent extends Agent implements UserMgr, RoleMgr,
 
 			Connection sqlConnection = getConnection();
 
+			if (debug)
+				log.info("Checking login "+account.getName());
 			// Comprobar si el usuario existe
 			stmt = sqlConnection
-					.prepareStatement("SELECT 1 FROM sys.syslogins WHERE name=?"); //$NON-NLS-1$
+					.prepareStatement("SELECT name FROM sys.syslogins WHERE name=?"); //$NON-NLS-1$
 			stmt.setString(1, account.getName());
 			rset = stmt.executeQuery();
 			// Determinar si el usuario está o no activo
 			// Si no existe darlo de alta
 			if (!rset.next()) {
+				if (debug)
+					log.info("Account "+account.getName()+" not found");
 				if ( account.getStatus() != AccountStatus.REMOVED)
 				{
 					stmt.close();
@@ -277,6 +282,8 @@ public class SqlServerAgent extends Agent implements UserMgr, RoleMgr,
 					String cmd;
 					if (! account.getName().contains("\\"))
 					{
+						if (debug)
+							log.info("Creating login "+account.getName()+" from locally");
 						Password p = getServer().getOrGenerateUserPassword(account.getName(), account.getSystem());
 						if ( p == null)
 							cmd = "CREATE LOGIN [" + account.getName() + "]"; //$NON-NLS-1$
@@ -285,6 +292,8 @@ public class SqlServerAgent extends Agent implements UserMgr, RoleMgr,
 					}
 					else
 					{
+						if (debug)
+							log.info("Creating login "+account.getName()+" from windows");
 						cmd = "CREATE LOGIN [" + account.getName() + "] FROM WINDOWS"; //$NON-NLS-1$
 					}
 					if (debug) log.info(cmd);
@@ -297,14 +306,18 @@ public class SqlServerAgent extends Agent implements UserMgr, RoleMgr,
 
 			// Comprobar si el usuario existe
 			stmt = sqlConnection
-					.prepareStatement("SELECT 1 FROM sys.sysusers WHERE name=?"); //$NON-NLS-1$
+					.prepareStatement("SELECT name FROM sys.sysusers WHERE name=?"); //$NON-NLS-1$
 			stmt.setString(1, account.getName());
 			rset = stmt.executeQuery();
 			// Determinar si el usuario está o no activo
 			// Si no existe darlo de alta
+			if (debug)
+				log.info("Checking user "+account.getName()+"");
 			if (!rset.next()) {
 				if ( ! account.isDisabled())
 				{
+					if (debug)
+						log.info("Creating user "+account.getName()+"");
 					stmt.close();
 					
 					String cmd;
@@ -316,6 +329,7 @@ public class SqlServerAgent extends Agent implements UserMgr, RoleMgr,
 			}
 			else
 			{
+				log.info("Found user "+rset.getString(1));
 				if ( account.getStatus() == AccountStatus.REMOVED)
 				{
 					if (debug) log.info("DROP USER ["+account.getName()+"]");
@@ -343,6 +357,9 @@ public class SqlServerAgent extends Agent implements UserMgr, RoleMgr,
 			// System.out.println ("Usuario "+user+" ya existe");
 			rset.close();
 			stmt.close();
+
+			if (debug)
+				log.info("Checking grants "+account.getName()+" ");
 
 			// Eliminar los roles que sobran
 			stmt = sqlConnection
@@ -381,7 +398,7 @@ public class SqlServerAgent extends Agent implements UserMgr, RoleMgr,
 			for (RoleGrant r : roles) {
 				if (r != null) {
 					stmt = sqlConnection
-							.prepareStatement("SELECT 1 from sys.database_principals WHERE type = 'R' AND name=?"); //$NON-NLS-1$
+							.prepareStatement("SELECT name from sys.database_principals WHERE type = 'R' AND name=?"); //$NON-NLS-1$
 					stmt.setString(1, r.getRoleName());
 					rset = stmt.executeQuery();
 					if (!rset.next()) {
@@ -552,7 +569,7 @@ public class SqlServerAgent extends Agent implements UserMgr, RoleMgr,
 				// Comprobar si el Role existe en la bd
 				Connection sqlConnection = getConnection();
 				stmt = sqlConnection
-						.prepareStatement("SELECT 1 from sys.database_principals WHERE type = 'R' AND name=?"); //$NON-NLS-1$
+						.prepareStatement("SELECT name from sys.database_principals WHERE type = 'R' AND name=?"); //$NON-NLS-1$
 				stmt.setString(1, role);
 				ResultSet rset = stmt.executeQuery();
 				if (!rset.next()) // aquest Role NO existeix com a Role de la BBDD
@@ -588,7 +605,7 @@ public class SqlServerAgent extends Agent implements UserMgr, RoleMgr,
 			Connection sqlConnection = getConnection();
 			if (this.getSystem().getName().equals(bbdd)) {
 				PreparedStatement stmt = sqlConnection
-						.prepareStatement("SELECT 1 from sys.database_principals WHERE type = 'R' AND name=?"); //$NON-NLS-1$
+						.prepareStatement("SELECT name from sys.database_principals WHERE type = 'R' AND name=?"); //$NON-NLS-1$
 				stmt.setString(1, nom);
 				ResultSet rset = stmt.executeQuery();
 				if (rset.next())
@@ -792,7 +809,7 @@ public class SqlServerAgent extends Agent implements UserMgr, RoleMgr,
 			Connection sqlConnection = getConnection();
 
 			stmt = sqlConnection
-					.prepareStatement("SELECT 1 from sys.database_principals WHERE type = 'R' AND name=?"); //$NON-NLS-1$
+					.prepareStatement("SELECT name from sys.database_principals WHERE type = 'R' AND name=?"); //$NON-NLS-1$
 			stmt.setString(1, roleName);
 			rset = stmt.executeQuery();
 			// Determinar si el usuario está o no activo
