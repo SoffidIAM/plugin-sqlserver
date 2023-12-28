@@ -36,13 +36,6 @@
 			</listbox>
 		</row>
 		<row>
-			<input_etiqueta value="Debug" />
-			<listbox bind="@param4" mold="select">
-				<listitem value="false" label="No"></listitem>
-				<listitem value="true" label="Yes"></listitem>
-			</listbox>
-		</row>
-		<row>
 			<input_etiqueta value="Enable debug" />
 			<listbox bind="@param4" mold="select" disabled="{!canModifyAgent}" width="100px">
 				<listitem value="false">
