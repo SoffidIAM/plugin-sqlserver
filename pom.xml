@@ -56,14 +56,10 @@
 			</plugin>
     </plugins>
   </build>
-  <properties>
-    <maven.compile.source>5</maven.compile.source>
-    <maven.compile.target>5</maven.compile.target>
-  </properties>
   <pluginRepositories>
     <pluginRepository>
       <id>soffid-open</id>
-      <url>https://www.soffid.com/maven</url>
+      <url>https://download.soffid.com/maven</url>
     </pluginRepository>
   </pluginRepositories>
   <repositories>
@@ -73,7 +69,7 @@
     </repository>
     <repository>
       <id>soffid-open</id>
-      <url>https://www.soffid.com/maven</url>
+      <url>https://download.soffid.com/maven</url>
     </repository>
     <repository>
       <id>jboss</id>
