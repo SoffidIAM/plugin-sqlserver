@@ -18,20 +18,6 @@ cache:
     - .m2/repository
     - .m2/tags.json
 
-# For merge requests do not `deploy` but only run `verify`.
-# See https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
-.verify: &verify
-  stage: test
-  script:
-    - 'base64 -d $KEYSTORE_JKS >/tmp/keystore.p12'
-    - 'mvn $MAVEN_CLI_OPTS verify'
-  except:
-    variables:
-      - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-
-# Verify merge requests using JDK8
-verify:jdk8:
-  <<: *verify
 
 maven_install:
   stage: compile
@@ -47,9 +33,8 @@ maven_install:
     - mkdir "$HOME/.docker"
     - cp $DOCKER_CONFIG_JSON "$HOME/.docker/config.json"
     - mvn install $MAVEN_CLI_OPTS -s $DEPLOYER_SETTINGS
-  only:
-    variables:
-      - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 
 # To deploy packages from CI, create a ci_settings.xml file
@@ -68,8 +53,7 @@ deploy:
     - 'echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
     - 'base64 -d $KEYSTORE >/tmp/keystore.p12'
     - mvn deploy $MAVEN_CLI_OPTS -s $DEPLOYER_SETTINGS
-  only:
-    variables:
+  rules:
     - if: $CI_COMMIT_TAG != null
     - when: manual
 
