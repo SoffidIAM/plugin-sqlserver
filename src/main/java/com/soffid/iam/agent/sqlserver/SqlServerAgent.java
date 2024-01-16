@@ -915,7 +915,7 @@ public class SqlServerAgent extends Agent implements UserMgr, RoleMgr, Reconcile
 						"   sac_session_Id	varchar(50)," + // $NON-NLS-1$
 						"   sac_process		varchar(50)," + // $NON-NLS-1$
 						"   sac_host		varchar(50)," + // $NON-NLS-1$
-						"   sac_logon_day	timestamp," + // $NON-NLS-1$
+						"   sac_logon_day	datetime," + // $NON-NLS-1$
 						"   sac_os_user		varchar(50)," + // $NON-NLS-1$
 						"   sac_program		varchar(80)" + // $NON-NLS-1$
 						" )"; //$NON-NLS-1$
@@ -1268,7 +1268,7 @@ public class SqlServerAgent extends Agent implements UserMgr, RoleMgr, Reconcile
 				} else
 					log.type = -1; // desconocido
 				log.setClient(rset.getString(4));
-				log.setDate(rset.getTimestamp(5));
+				log.setDate(rset.getDate(5));
 
 				logs.add(log);
 				this.log.info("LogLoader: loaded " + log.getDate());
